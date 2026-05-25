@@ -46,8 +46,8 @@
 
           <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-end">
             <div class="col-span-2 justify-self-start sm:col-auto sm:justify-self-auto w-fit inline-flex items-center rounded-full border border-zinc-200 bg-zinc-100/50 p-1 dark:border-zinc-700 dark:bg-zinc-800/50 h-10.5 sm:h-auto">
-              
-              <button 
+
+              <button
                 @click="setTheme('light')"
                 class="relative flex h-8 w-8 sm:h-7 sm:w-7 items-center justify-center rounded-full transition-all duration-200 focus:outline-none"
                 :class="themeMode === 'light' ? 'bg-white text-amber-500 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-700 dark:text-amber-400 dark:ring-zinc-600' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'"
@@ -56,7 +56,7 @@
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
               </button>
 
-              <button 
+              <button
                 @click="setTheme('system')"
                 class="relative flex h-8 w-8 sm:h-7 sm:w-7 items-center justify-center rounded-full transition-all duration-200 focus:outline-none"
                 :class="themeMode === 'system' ? 'bg-white text-indigo-500 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-700 dark:text-indigo-400 dark:ring-zinc-600' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'"
@@ -65,7 +65,7 @@
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
               </button>
 
-              <button 
+              <button
                 @click="setTheme('dark')"
                 class="relative flex h-8 w-8 sm:h-7 sm:w-7 items-center justify-center rounded-full transition-all duration-200 focus:outline-none"
                 :class="themeMode === 'dark' ? 'bg-white text-indigo-500 shadow-sm ring-1 ring-zinc-200 dark:bg-zinc-700 dark:text-indigo-300 dark:ring-zinc-600' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'"
@@ -111,7 +111,7 @@
       v-show="showEmpty">
       暂无可展示的数据
     </div>
-    
+
     <div class="fixed inset-0 z-50" v-show="loginModal">
       <div class="absolute inset-0 bg-zinc-900/50 dark:bg-black/80"></div>
       <div class="relative mx-auto mt-24 w-[92vw] max-w-md">
@@ -128,7 +128,7 @@
               <button class="flex-1 rounded-lg px-3 py-2 text-xs font-medium transition" :class="loginMode === 'sms' ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-100' : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200'" @click="switchLoginMode('sms')" type="button">手机 + 验证码</button>
               <button class="flex-1 rounded-lg px-3 py-2 text-xs font-medium transition" :class="loginMode === 'token' ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-100' : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200'" @click="switchLoginMode('token')" type="button">直接输入 token</button>
             </div>
-            
+
             <template v-if="loginMode === 'sms'">
               <label class="block">
                 <div class="mb-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">手机号</div>
@@ -139,7 +139,7 @@
                 <div class="mb-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">短信验证码</div>
                 <div class="flex gap-2">
                   <input ref="codeInputRef" v-model.trim="loginCode" inputmode="numeric" maxlength="6" class="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm outline-none focus:border-zinc-300 focus:bg-white focus:shadow-[0_0_0_4px_rgba(161,161,170,0.2)] dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-600 dark:focus:bg-zinc-900" placeholder="6位验证码" @keydown.enter="doLogin" />
-                  
+
                   <button
                     type="button"
                     class="shrink-0 rounded-xl bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-600 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50 w-[110px]"
@@ -156,7 +156,7 @@
                 <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" v-show="loginLoading"></span>
               </button>
             </template>
-            
+
             <template v-else>
               <label class="block">
                 <div class="mb-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">ecs_token</div>
@@ -164,7 +164,7 @@
               </label>
               <button class="mt-1 inline-flex w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 active:scale-[0.99] dark:bg-indigo-600 dark:hover:bg-indigo-500" @click="applyTokenLogin" type="button">使用该 ecs_token 登录</button>
             </template>
-            
+
             <div class="rounded-xl border px-3 py-2 text-xs" v-show="loginMsg" :class="loginMsgKind === 'ok' ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-400' : 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/50 dark:text-rose-400'">{{ loginMsg }}</div>
             <div class="text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-500">
               提示：点击登录即表示您同意本工具获取您的
@@ -184,7 +184,7 @@
       </div>
     </div>
 
-    <CopyModal 
+    <CopyModal
       v-model:open="copyModalOpen"
       :package-name="packageName"
       :app-id="currentAppId"
@@ -202,13 +202,13 @@ import CopyModal from "@/components/CopyModal.vue";
 const MAIN_API = "https://networkapi.2t.hk";
 const STORAGE_KEY = "ecs_token";
 const PHONE_HISTORY_KEY = "last_used_phone"; // ✅ 新增本地记忆手机号
-const THEME_KEY = "theme"; 
-const LOGIN_API = MAIN_API + "/gettoken"; 
+const THEME_KEY = "theme";
+const LOGIN_API = MAIN_API + "/gettoken";
 const OCS_API = MAIN_API + "/ocs_proxy";
 const BASIC_API = MAIN_API + "/basicdata_proxy";
 const QCI_API = MAIN_API + "/qci_proxy";
 const INTERVAL_MS = 30_000;
-const CAPTCHA_APPID = "195809716"; 
+const CAPTCHA_APPID = "195809716";
 const ECS_ACC = "sGPt3BqyB6Z8STGQtqwLkkapYkz97jot5FVcLTq2IuxlXuBzS1vqZlKEe9Ac4QHJBkBAZYrKQKZyUhWatBMozAVYOL1Wd7sO/hXwCTggEcCFgpgaBytbG99HN3xavOGbeDtTZGV7eiBYSsQNhJ3wRvnvN2PKXFzBLhPa8i0j8Gs=";
 
 // ========= UI state =========
@@ -232,8 +232,8 @@ const basicIsLte = ref(false);
 const openPrivacy = inject("openPrivacy");
 
 // ========= Theme Logic =========
-const themeMode = ref('system'); 
-let mediaQueryList = null; 
+const themeMode = ref('system');
+let mediaQueryList = null;
 
 function applyTheme() {
   const isSystem = themeMode.value === 'system';
@@ -301,7 +301,7 @@ function handleCommonErrors(json, httpStatus) {
     showLogin();
     loginMsg.value = "您的账号被联通限制 (999997)";
     loginMsgKind.value = "error";
-    return true; 
+    return true;
   }
   if (json?.code === 'TOKEN_EXPIRED' || httpStatus === 401 || (json?.code === 'UPSTREAM_NON_JSON' && /99999[89]/.test(json?.raw))) {
     clearEcsToken();
@@ -347,7 +347,7 @@ function buildCardsFromOcs(json) {
     // total 可能在 voiceRes 根级，或需要计算
     const used = toNum(voiceRes?.userResource) ?? 0;
     const remain = Math.max(0, toNum(voiceRes?.remainResource) ?? 0);
-    
+
     // 尝试多种方式获取总量：直接的 total、通过 addUpTotal、或计算 used + remain
     let total = toNum(voiceRes?.total);
     if (total === null || total === undefined) {
@@ -356,7 +356,7 @@ function buildCardsFromOcs(json) {
     if (total === null || total === undefined) {
       total = used + remain;
     }
-    
+
     const percent = total > 0 ? clamp((used / total) * 100, 0, 100) : null;
     cards.push({ kind: "voice", title: "语音", subtitle: "（已用）", mainValue: formatMinutes(used), smallTotal: `总：${formatMinutes(total)}`, unlimited: false, percent, canUseText: `剩：${formatMinutes(remain)}` });
   }
@@ -374,7 +374,7 @@ function buildCardsFromOcs(json) {
       const use = toNum(d?.use) ?? 0, total = toNum(d?.total), remain = toNum(d?.remain);
       let percent = unlimited ? 100 : (total > 0 ? clamp((use / total) * 100, 0, 100) : (use + (remain || 0) > 0 ? clamp((use / (use + (remain || 0))) * 100, 0, 100) : null));
       const meta = flowTypeMeta(ft, unlimited), share = unlimited ? shareMeta(d?.typemark) : null;
-      
+
       const badges = [
         meta?.label ? { text: meta.label, cls: meta.badge } : null,
         share ? { text: share.label, cls: share.badge } : null,
@@ -390,10 +390,10 @@ function buildCardsFromOcs(json) {
     });
   }
 
-  return cards.sort((a, b) => { 
-    const x = (a.kind==="voice"?0:a.kind==="sms"?5:1000+(a.flowTypeRank??9)*100+(a.flowLimitedKey??1)*10) - 
-              (b.kind==="voice"?0:b.kind==="sms"?5:1000+(b.flowTypeRank??9)*100+(b.flowLimitedKey??1)*10); 
-    return x || String(a.title).localeCompare(String(b.title), "zh-CN"); 
+  return cards.sort((a, b) => {
+    const x = (a.kind==="voice"?0:a.kind==="sms"?5:1000+(a.flowTypeRank??9)*100+(a.flowLimitedKey??1)*10) -
+              (b.kind==="voice"?0:b.kind==="sms"?5:1000+(b.flowTypeRank??9)*100+(b.flowLimitedKey??1)*10);
+    return x || String(a.title).localeCompare(String(b.title), "zh-CN");
   });
 }
 
@@ -404,11 +404,11 @@ function makeOcsCard(card) {
   const bgBarClass = "bg-zinc-100 dark:bg-zinc-800";
   // ✅ 修正：短信使用 ICON_SMS
   const iconSvg = card.kind === "voice" ? ICON_PHONE : card.kind === "sms" ? ICON_SMS : ICON_DATA;
-  
-  const badgesHtml = card.kind === "flow" && card.badges?.length ? 
+
+  const badgesHtml = card.kind === "flow" && card.badges?.length ?
     `<div class="mt-2 flex flex-wrap gap-1.5">${card.badges.map(b=>`<span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] ${escapeHtml(b.cls)}">${escapeHtml(b.text)}</span>`).join("")}</div>` : "";
 
-  const unlimitedBadge = unlimited ? 
+  const unlimitedBadge = unlimited ?
     `<div class="absolute -right-2 -top-2 inline-flex h-7 min-w-[28px] items-center justify-center rounded-full bg-zinc-900 px-2 text-xs font-semibold text-white shadow-sm dark:bg-zinc-100 dark:text-zinc-900">∞</div>` : "";
 
   return `
@@ -445,11 +445,11 @@ function renderFromOcs(json) {
   const cards = buildCardsFromOcs(json);
   if (!cards.length) { showEmpty.value = true; cardsHtml.value = ""; return; }
   showEmpty.value = false;
-  
+
   const unl = cards.filter(c => c.kind==="flow" && c.unlimited);
   const lim = cards.filter(c => c.kind==="flow" && !c.unlimited);
   const oth = cards.filter(c => c.kind!=="flow");
-  
+
   let html = [...oth, ...unl].map(makeOcsCard).join("");
   if (lim.length === 1) {
     html += makeOcsCard(lim[0]);
@@ -473,16 +473,16 @@ function renderFromOcs(json) {
 async function fetchData() {
   const ecs_token = getEcsToken();
   if (!ecs_token) { setStatus("未登录", "error"); showLogin(); return; }
-  
+
   isLoading.value = true;
   setStatus("请求中…", "info");
-  
+
   try {
     const r = await fetch(OCS_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ecs_token, ecs_acc: ECS_ACC }) });
     const t = await r.text();
-    
+
     if (looksLikeHtml(t)) throw new Error("API返回HTML");
-    
+
     let j;
     try { j = JSON.parse(t); } catch { throw new Error("响应非JSON"); }
 
@@ -491,11 +491,11 @@ async function fetchData() {
     if (j?.ok === false || (j?.code && j.code !== "0000")) throw new Error(j?.msg || "查询失败");
 
     renderFromOcs(j);
-    
+
     await fetchBasicDataAndRenderRate();
     if (basicIsLte.value) await fetchQciAndRender();
     else await fetchQciAndRender();
-    
+
     setLastAtNow();
     setStatus("已刷新", "ok");
   } catch (e) {
@@ -505,8 +505,8 @@ async function fetchData() {
   }
 }
 
-async function fetchBasicDataAndRenderRate() { 
-  const t = getEcsToken(); 
+async function fetchBasicDataAndRenderRate() {
+  const t = getEcsToken();
   if (!t) return;
   try {
     const r = await fetch(BASIC_API, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify({ ecs_token: t, ecs_acc: ECS_ACC }) });
@@ -521,8 +521,8 @@ async function fetchBasicDataAndRenderRate() {
   } catch {}
 }
 
-async function fetchQciAndRender() { 
-  const t = getEcsToken(); 
+async function fetchQciAndRender() {
+  const t = getEcsToken();
   if (!t) return;
   try {
     const r = await fetch(QCI_API, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify({ ecs_token: t, ecs_acc: ECS_ACC }) });
@@ -567,10 +567,10 @@ function loadScript() {
 
 async function handleSendCode(resultToken = "") {
   if (!isValidPhone.value) return;
-  
+
   // ✅ 成功后保存手机号到历史记录
   localStorage.setItem(PHONE_HISTORY_KEY, loginPhone.value);
-  
+
   smsLoading.value = true;
   loginMsg.value = "";
   if (!currentAppId.value) currentAppId.value = generateAppId();
@@ -579,20 +579,20 @@ async function handleSendCode(resultToken = "") {
     const r = await fetch(`${LOGIN_API}?action=send`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        phone: loginPhone.value, 
-        appid: currentAppId.value, 
-        resultToken 
+      body: JSON.stringify({
+        phone: loginPhone.value,
+        appid: currentAppId.value,
+        resultToken
       })
     });
-    
+
     const d = await r.json();
-    
+
     if (d.status === 'success') {
       loginMsg.value = d.msg || '验证码已发送，请查收';
       loginMsgKind.value = 'ok';
       startSmsCountdown();
-      
+
       // ✅ 自动聚焦到验证码输入框，方便用户直接打字
       nextTick(() => { codeInputRef.value?.focus(); });
     } else if (d.status === 'need_captcha') {
@@ -613,7 +613,7 @@ async function handleSendCode(resultToken = "") {
 
 async function startCaptcha(mobileHex) {
   await loadScript();
-  
+
   if (typeof window.TencentCaptcha !== 'function') {
     loginMsg.value = '验证码组件加载失败';
     loginMsgKind.value = 'error';
@@ -625,7 +625,7 @@ async function startCaptcha(mobileHex) {
       try {
         loginMsg.value = "正在进行安全验证...";
         loginMsgKind.value = "ok";
-        
+
         const vr = await fetch(`${LOGIN_API}?action=validate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -636,7 +636,7 @@ async function startCaptcha(mobileHex) {
           })
         });
         const vd = await vr.json();
-        
+
         if (vd.status === 'success' && vd.resultToken) {
           loginMsg.value = "安全验证通过，正在发送短信...";
           await handleSendCode(vd.resultToken);
@@ -656,29 +656,29 @@ async function startCaptcha(mobileHex) {
   captcha.show();
 }
 
-async function doLogin() { 
-  if (!isValidPhone.value || !loginCode.value) return; 
-  loginLoading.value = true; 
-  try { 
+async function doLogin() {
+  if (!isValidPhone.value || !loginCode.value) return;
+  loginLoading.value = true;
+  try {
     // 保存成功的手机号
     localStorage.setItem(PHONE_HISTORY_KEY, loginPhone.value);
 
-    const r = await fetch(`${LOGIN_API}?action=login`, { 
-      method: "POST", 
+    const r = await fetch(`${LOGIN_API}?action=login`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        phone: loginPhone.value, 
+      body: JSON.stringify({
+        phone: loginPhone.value,
         code: loginCode.value,
-        appid: currentAppId.value || generateAppId() 
-      }) 
-    }); 
-    const d = await r.json(); 
-    
-    if (d.status !== "success") throw new Error(d.msg || "登录失败"); 
-    
+        appid: currentAppId.value || generateAppId()
+      })
+    });
+    const d = await r.json();
+
+    if (d.status !== "success") throw new Error(d.msg || "登录失败");
+
     // ✅ 优化点：直接读取后端返回的 ecs_token，不依赖容易越界的字符串切割
     if (d.ecs_token) {
-      setEcsToken(d.ecs_token); 
+      setEcsToken(d.ecs_token);
       // 获取 token_online（参考 Python 脚本格式：phone#token_online#appid）
       // 从后端返回的所有可能字段中获取
       if (d.token_online) {
@@ -693,22 +693,22 @@ async function doLogin() {
         const accountInfo = `${loginPhone.value}#${tokenOnline.value}#${currentAppId.value || generateAppId()}`;
         localStorage.setItem("UNICOM_ACCOUNT_FORMAT", accountInfo);
       }
-      hideLogin(); 
-      fetchData(); 
+      hideLogin();
+      fetchData();
     } else {
       throw new Error("后端返回的数据中缺少 ecs_token");
     }
-  } catch (e) { 
+  } catch (e) {
     loginMsg.value = e.message;
     loginMsgKind.value = "error";
-  } finally { 
-    loginLoading.value = false; 
-  } 
+  } finally {
+    loginLoading.value = false;
+  }
 }
 
 // Controls
-function showLogin() { 
-  loginModal.value = true; 
+function showLogin() {
+  loginModal.value = true;
   currentAppId.value = ""; // 打开弹窗时重置 appId
 }
 function hideLogin() { loginModal.value = false; }
@@ -718,17 +718,17 @@ function applyTokenLogin() { if (loginToken.value.length > 20) { setEcsToken(log
 function startTimer() { stopTimer(); timer = setInterval(() => { if (!paused.value) fetchData(); }, INTERVAL_MS); }
 function stopTimer() { clearInterval(timer); }
 function togglePause() { paused.value = !paused.value; }
-function showCopyModal() { 
-  copyModalOpen.value = true; 
+function showCopyModal() {
+  copyModalOpen.value = true;
 }
 
 // 点击标题时显示复制模态窗口
 onMounted(() => {
   mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
-  if (mediaQueryList.addEventListener) { mediaQueryList.addEventListener('change', onSystemThemeChange); } 
+  if (mediaQueryList.addEventListener) { mediaQueryList.addEventListener('change', onSystemThemeChange); }
   else if (mediaQueryList.addListener) { mediaQueryList.addListener(onSystemThemeChange); }
   initTheme();
-  
+
   if (!window.__FLOW_GROUP_BINDED__) {
     window.__FLOW_GROUP_BINDED__ = true;
     document.addEventListener("click", (e) => {
@@ -751,7 +751,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   stopTimer();
   if (mediaQueryList) {
-    if (mediaQueryList.removeEventListener) { mediaQueryList.removeEventListener('change', onSystemThemeChange); } 
+    if (mediaQueryList.removeEventListener) { mediaQueryList.removeEventListener('change', onSystemThemeChange); }
     else if (mediaQueryList.removeListener) { mediaQueryList.removeListener(onSystemThemeChange); }
   }
 });
