@@ -121,7 +121,19 @@
               <div class="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">登录</div>
               <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">请输入手机号与短信验证码</div>
             </div>
-            <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">🔐</span>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">🔐</span>
+              <button
+                type="button"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                @click="loginModal = false"
+                aria-label="关闭"
+              >
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="mt-4 grid gap-3">
             <div class="flex gap-2 rounded-xl bg-zinc-100 p-1 dark:bg-zinc-800">
@@ -333,7 +345,21 @@ function shareMeta(tm) {
   return null;
 }
 function flowTypeRank(k) { return k==="1"?1:k==="2"?2:k==="3"?3:9; }
-function getAgg(res) { const used = toNum(res?.userResource) ?? 0, remain = Math.max(0, toNum(res?.remainResource) ?? 0); return { used, remain, total: used + remain }; }
+function getAgg(res) {
+  // 优先从 details[0] 中获取 total、use、remain
+  const detail = res?.details?.[0];
+  if (detail) {
+    const used = toNum(detail?.use) ?? 0;
+    const remain = toNum(detail?.remain) ?? 0;
+    const total = toNum(detail?.total);
+    if (total !== null) {
+      return { used, remain, total };
+    }
+  }
+  // 回退：从根级属性计算
+  const used = toNum(res?.userResource) ?? 0, remain = Math.max(0, toNum(res?.remainResource) ?? 0);
+  return { used, remain, total: used + remain };
+}
 
 // 格式化后的卡片生成逻辑
 function buildCardsFromOcs(json) {
@@ -341,20 +367,27 @@ function buildCardsFromOcs(json) {
   const flowRes = mergeBlock(json, 0), voiceRes = mergeBlock(json, 1), smsRes = mergeBlock(json, 2);
 
   if (voiceRes) {
-    // ✅ 修复语音数据：
-    // 根据 API 实际返回的字段来正确取值
-    // userResource = 已用，remainResource = 剩余
-    // total 可能在 voiceRes 根级，或需要计算
-    const used = toNum(voiceRes?.userResource) ?? 0;
-    const remain = Math.max(0, toNum(voiceRes?.remainResource) ?? 0);
+    // ✅ 修复语音数据：优先从 details[0] 获取 total
+    const detail = voiceRes?.details?.[0];
+    let used = 0, remain = 0, total = null;
 
-    // 尝试多种方式获取总量：直接的 total、通过 addUpTotal、或计算 used + remain
-    let total = toNum(voiceRes?.total);
-    if (total === null || total === undefined) {
-      total = toNum(voiceRes?.addUpTotal);
+    if (detail) {
+      used = toNum(detail?.use) ?? 0;
+      remain = toNum(detail?.remain) ?? 0;
+      total = toNum(detail?.total);
     }
-    if (total === null || total === undefined) {
-      total = used + remain;
+
+    // 回退：从根级属性获取
+    if (total === null) {
+      used = toNum(voiceRes?.userResource) ?? 0;
+      remain = Math.max(0, toNum(voiceRes?.remainResource) ?? 0);
+      total = toNum(voiceRes?.total);
+      if (total === null) {
+        total = toNum(voiceRes?.addUpTotal);
+      }
+      if (total === null) {
+        total = used + remain;
+      }
     }
 
     const percent = total > 0 ? clamp((used / total) * 100, 0, 100) : null;
@@ -674,23 +707,47 @@ async function doLogin() {
     });
     const d = await r.json();
 
+    // 保存返回数据用于调试
+    localStorage.setItem("DEBUG_LOGIN_RESPONSE", JSON.stringify(d));
+
     if (d.status !== "success") throw new Error(d.msg || "登录失败");
 
-    // ✅ 优化点：直接读取后端返回的 ecs_token，不依赖容易越界的字符串切割
-    if (d.ecs_token) {
-      setEcsToken(d.ecs_token);
-      // 获取 token_online（参考 Python 脚本格式：phone#token_online#appid）
-      // 从后端返回的所有可能字段中获取
-      if (d.token_online) {
-        tokenOnline.value = d.token_online;
-      } else if (d.token) {
-        tokenOnline.value = d.token;
-      } else {
-        tokenOnline.value = "";
+    // ✅ 从 full 字段中解析：phone#?#token_online#ecs_token#appid
+    let extractedEcsToken = null;
+    let extractedTokenOnline = null;
+    let extractedAppId = null;
+
+    if (d.full && typeof d.full === 'string') {
+      const parts = d.full.split('#');
+      // parts[0] = phone
+      // parts[2] = token_online
+      // parts[3] = ecs_token
+      // parts[4] = appid
+      if (parts.length >= 5) {
+        extractedTokenOnline = parts[2];
+        extractedEcsToken = parts[3];
+        extractedAppId = parts[4];
       }
+    }
+
+    // 如果 full 字段没有，尝试直接字段
+    if (!extractedEcsToken) {
+      extractedEcsToken = d.ecs_token;
+    }
+    if (!extractedAppId && currentAppId.value) {
+      extractedAppId = currentAppId.value;
+    }
+
+    if (extractedEcsToken) {
+      setEcsToken(extractedEcsToken);
+      tokenOnline.value = extractedTokenOnline || "";
+      if (extractedAppId) {
+        currentAppId.value = extractedAppId;
+      }
+
       // 保存到本地，格式参考 UNICOM_ACCOUNTS
       if (tokenOnline.value) {
-        const accountInfo = `${loginPhone.value}#${tokenOnline.value}#${currentAppId.value || generateAppId()}`;
+        const accountInfo = `${loginPhone.value}#${tokenOnline.value}#${extractedAppId || currentAppId.value || generateAppId()}`;
         localStorage.setItem("UNICOM_ACCOUNT_FORMAT", accountInfo);
       }
       hideLogin();
