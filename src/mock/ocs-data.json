@@ -1,0 +1,91 @@
+{
+  "code": "0000",
+  "ok": true,
+  "packageName": "个人5G套餐",
+  "resources": [
+    {
+      "type": "flowList",
+      "remainResource": "1024",
+      "userResource": "512",
+      "details": []
+    },
+    {
+      "type": "unsharedVoiceList",
+      "remainResource": "467",
+      "userResource": "33",
+      "details": [
+        {
+          "addUpItemName": "语音",
+          "addupItemCode": "40000",
+          "elemType": "1",
+          "endDate": "长期有效",
+          "endXsbDate": "长期有效",
+          "feePolicyId": "8336160",
+          "feePolicyName": "赠送500分钟国内语音",
+          "hide": false,
+          "hideCarryForwardLabel": false,
+          "hideUnsharedLabel": false,
+          "limited": "0",
+          "rbFlag": "0",
+          "remain": "467",
+          "resourceSource": "0",
+          "resourceType": "02",
+          "total": "500",
+          "typemark": "1",
+          "use": "33",
+          "usedPercent": "7",
+          "xexceedvalue": "0"
+        }
+      ]
+    },
+    {
+      "type": "unsharedSMSList",
+      "remainResource": "300",
+      "userResource": "0",
+      "details": [
+        {
+          "addUpItemName": "国内短信",
+          "addupItemCode": "40002",
+          "elemType": "2",
+          "endDate": "长期有效",
+          "endXsbDate": "长期有效",
+          "feePolicyId": "5702000",
+          "feePolicyName": "短信网龄升级计划（按开户时间）",
+          "hide": false,
+          "hideCarryForwardLabel": false,
+          "hideUnsharedLabel": false,
+          "limited": "0",
+          "rbFlag": "0",
+          "remain": "300",
+          "resourceSource": "0",
+          "resourceType": "04",
+          "total": "300",
+          "typemark": "1",
+          "use": "0",
+          "usedPercent": "0",
+          "xexceedvalue": "0"
+        }
+      ]
+    }
+  ],
+  "unshared": [
+    {
+      "type": "flowList",
+      "remainResource": "0",
+      "userResource": "0",
+      "details": []
+    },
+    {
+      "type": "unsharedVoiceList",
+      "remainResource": "0",
+      "userResource": "0",
+      "details": []
+    },
+    {
+      "type": "unsharedSMSList",
+      "remainResource": "0",
+      "userResource": "0",
+      "details": []
+    }
+  ]
+}

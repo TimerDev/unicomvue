@@ -6,8 +6,8 @@
           <div class="min-w-0">
             <h1
               class="text-xl font-semibold tracking-tight text-zinc-900 sm:text-2xl cursor-pointer select-none truncate dark:text-zinc-100"
-              :title="packageName ? `套餐：${packageName}（点击复制 ecs_token）` : '点击复制 ecs_token'"
-              @click="copyEcsToken"
+              :title="packageName ? `套餐：${packageName}（点击复制凭证）` : '点击复制凭证'"
+              @click="showCopyModal"
             >
               {{ packageName || "余量 / 用量展示" }}
             </h1>
@@ -15,7 +15,7 @@
             <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
               <span class="font-medium text-zinc-700 dark:text-zinc-300">余量 / 用量</span>
               <span class="mx-2 text-zinc-300 dark:text-zinc-700">•</span>
-              <span>点击标题可复制 ecs_token</span>
+              <span>点击标题可复制凭证（appid、ecs_token、token_online）</span>
             </div>
 
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
@@ -183,11 +183,20 @@
         </div>
       </div>
     </div>
+
+    <CopyModal 
+      v-model:open="copyModalOpen"
+      :package-name="packageName"
+      :app-id="currentAppId"
+      :ecs-token="getEcsToken()"
+      :token-online="tokenOnline"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, onBeforeUnmount, ref, inject, nextTick } from "vue";
+import CopyModal from "@/components/CopyModal.vue";
 
 // ========= 配置 =========
 const MAIN_API = "https://networkapi.2t.hk";
@@ -248,6 +257,10 @@ const loginCode = ref("");
 const loginLoading = ref(false);
 const loginMsg = ref("");
 const loginMsgKind = ref("error");
+
+// ========= Copy Modal State =========
+const copyModalOpen = ref(false);
+const tokenOnline = ref("");
 
 const smsLoading = ref(false);
 const smsCountdown = ref(0);
@@ -328,13 +341,40 @@ function buildCardsFromOcs(json) {
   const flowRes = mergeBlock(json, 0), voiceRes = mergeBlock(json, 1), smsRes = mergeBlock(json, 2);
 
   if (voiceRes) {
-    const { used, remain, total } = getAgg(voiceRes);
+    // ✅ 修复语音数据：
+    // 根据 API 实际返回的字段来正确取值
+    // userResource = 已用，remainResource = 剩余
+    // total 可能在 voiceRes 根级，或需要计算
+    const used = toNum(voiceRes?.userResource) ?? 0;
+    const remain = Math.max(0, toNum(voiceRes?.remainResource) ?? 0);
+    
+    // 尝试多种方式获取总量：直接的 total、通过 addUpTotal、或计算 used + remain
+    let total = toNum(voiceRes?.total);
+    if (total === null || total === undefined) {
+      total = toNum(voiceRes?.addUpTotal);
+    }
+    if (total === null || total === undefined) {
+      total = used + remain;
+    }
+    
     const percent = total > 0 ? clamp((used / total) * 100, 0, 100) : null;
     cards.push({ kind: "voice", title: "语音", subtitle: "（已用）", mainValue: formatMinutes(used), smallTotal: `总：${formatMinutes(total)}`, unlimited: false, percent, canUseText: `剩：${formatMinutes(remain)}` });
   }
 
   if (smsRes) {
-    const { used, remain, total } = getAgg(smsRes);
+    // ✅ 修复短信数据，与语音逻辑保持一致
+    const used = toNum(smsRes?.userResource) ?? 0;
+    const remain = Math.max(0, toNum(smsRes?.remainResource) ?? 0);
+    
+    // 尝试多种方式获取总量：从 details 中获取或计算
+    let total = smsRes?.details?.[0]?.total ? toNum(smsRes.details[0].total) : null;
+    if (total === null || total === undefined) {
+      total = toNum(smsRes?.total);
+    }
+    if (total === null || total === undefined) {
+      total = used + remain;
+    }
+    
     const percent = total > 0 ? clamp((used / total) * 100, 0, 100) : null;
     cards.push({ kind: "sms", title: "短信", subtitle: "（已用）", mainValue: `${Math.round(used)}条`, smallTotal: `总：${Math.round(total)}`, unlimited: false, percent, canUseText: `剩：${Math.round(remain)}` });
   }
@@ -651,6 +691,20 @@ async function doLogin() {
     // ✅ 优化点：直接读取后端返回的 ecs_token，不依赖容易越界的字符串切割
     if (d.ecs_token) {
       setEcsToken(d.ecs_token); 
+      // 获取 token_online（参考 Python 脚本格式：phone#token_online#appid）
+      // 从后端返回的所有可能字段中获取
+      if (d.token_online) {
+        tokenOnline.value = d.token_online;
+      } else if (d.token) {
+        tokenOnline.value = d.token;
+      } else {
+        tokenOnline.value = "";
+      }
+      // 保存到本地，格式参考 UNICOM_ACCOUNTS
+      if (tokenOnline.value) {
+        const accountInfo = `${loginPhone.value}#${tokenOnline.value}#${currentAppId.value || generateAppId()}`;
+        localStorage.setItem("UNICOM_ACCOUNT_FORMAT", accountInfo);
+      }
       hideLogin(); 
       fetchData(); 
     } else {
@@ -676,9 +730,11 @@ function applyTokenLogin() { if (loginToken.value.length > 20) { setEcsToken(log
 function startTimer() { stopTimer(); timer = setInterval(() => { if (!paused.value) fetchData(); }, INTERVAL_MS); }
 function stopTimer() { clearInterval(timer); }
 function togglePause() { paused.value = !paused.value; }
-async function copyEcsToken() { try { await navigator.clipboard.writeText(getEcsToken()); setStatus("Token复制成功", "ok"); } catch {} }
+function showCopyModal() { 
+  copyModalOpen.value = true; 
+}
 
-// Lifecycle
+// 点击标题时显示复制模态窗口
 onMounted(() => {
   mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
   if (mediaQueryList.addEventListener) { mediaQueryList.addEventListener('change', onSystemThemeChange); } 
