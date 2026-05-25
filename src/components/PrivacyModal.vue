@@ -42,9 +42,11 @@
 
                                 <ul class="list-disc space-y-1 pl-5 leading-relaxed">
                                     <li>本项目 <span class="font-semibold">不会存储</span> 您的手机号、验证码或 <span
-                                            class="font-mono">ecs_token</span></li>
+                                            class="font-mono">ecs_token</span>、<span class="font-mono">appid</span> 和 <span class="font-mono">online token</span></li>
                                     <li><span class="font-mono">ecs_token</span> 仅保存在浏览器本地缓存（LocalStorage），用于免重复登录</li>
-                                    <li>你可随时点击【退出】清除本地 <span class="font-mono">ecs_token</span></li>
+                                    <li><span class="font-mono">appid</span> 和 <span class="font-mono">online token</span> 仅用于复制</li>
+                                    <li>点击【退出】按钮会彻底清除本地所有敏感数据（<span class="font-mono">ecs_token</span>、手机号历史、账户信息）</li>
+                                    <li>手机号历史仅保存在本地，方便下次登录，不会上传任何服务器</li>
                                     <li>本页面不需要第三方 Cookie</li>
                                 </ul>
 
@@ -88,17 +90,6 @@
                                     <ApiItem title="速率查询"
                                         url="https://m.client.10010.com/servicebusiness/query/fiveg/getbasicdata" />
                                 </div>
-                            </section>
-
-                            <section class="space-y-2">
-                                <div class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">联系方式</div>
-                                <p class="leading-relaxed">
-                                    有问题联系：
-                                    <a class="font-medium text-indigo-600 underline-offset-4 hover:underline dark:text-indigo-400"
-                                        :href="`mailto:${contactEmail}`">
-                                        {{ contactEmail }}
-                                    </a>
-                                </p>
                             </section>
                         </div>
                     </div>

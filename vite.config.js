@@ -15,12 +15,12 @@ const COMMIT = safe("git rev-parse --short HEAD");
 const BUILD_TIME = new Date().toISOString();
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [
     vue(),
-    vueDevTools(),
+    command === 'serve' ? vueDevTools() : null,
     tailwindcss(),
-  ],
+  ].filter(Boolean),
   define: {
     __APP_BRANCH__: JSON.stringify(BRANCH),
     __APP_COMMIT__: JSON.stringify(COMMIT),
@@ -42,4 +42,4 @@ export default defineConfig({
     host: '0.0.0.0',
     cors:true
   },
-})
+}))

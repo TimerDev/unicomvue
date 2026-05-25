@@ -63,17 +63,6 @@
 
         <!-- right links -->
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <!-- privacy -->
-          <button
-            type="button"
-            class="cursor-pointer
-                   text-zinc-700 underline underline-offset-4 decoration-zinc-300
-                   hover:decoration-zinc-500
-                   dark:text-zinc-300 dark:decoration-zinc-600 dark:hover:decoration-zinc-400"
-            @click="$emit('open-privacy')"
-          >
-            隐私 / 说明
-          </button>
         </div>
       </div>
     </div>
@@ -94,7 +83,6 @@ import { APP_BRANCH, APP_COMMIT, APP_BUILD_TIME } from "@/env";
 defineProps({
   contactEmail: { type: String, default: "aliya@nbcnm.cn" },
 });
-defineEmits(["open-privacy"]);
 
 const year = new Date().getFullYear();
 

@@ -92,11 +92,12 @@
             </button>
 
             <button
-              class="col-span-2 inline-flex w-full items-center justify-center whitespace-nowrap rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-rose-600 shadow-sm transition hover:bg-rose-50 active:scale-[0.99] sm:col-auto sm:w-auto dark:border-zinc-700 dark:bg-zinc-900 dark:text-rose-400 dark:hover:bg-zinc-800"
-              title="清除 ecs_token"
-              @click="logout"
+              class="col-span-2 inline-flex w-full items-center justify-center whitespace-nowrap rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium transition active:scale-[0.99] sm:col-auto sm:w-auto dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+              :class="getEcsToken() ? 'text-rose-600 hover:bg-rose-50 dark:text-rose-400' : 'text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400'"
+              :title="getEcsToken() ? '清除 ecs_token' : '登录账号'"
+              @click="getEcsToken() ? logout() : showLogin()"
             >
-              退出
+              {{ getEcsToken() ? "退出" : "登录" }}
             </button>
           </div>
         </div>
@@ -707,9 +708,6 @@ async function doLogin() {
     });
     const d = await r.json();
 
-    // 保存返回数据用于调试
-    localStorage.setItem("DEBUG_LOGIN_RESPONSE", JSON.stringify(d));
-
     if (d.status !== "success") throw new Error(d.msg || "登录失败");
 
     // ✅ 从 full 字段中解析：phone#?#token_online#ecs_token#appid
@@ -770,7 +768,16 @@ function showLogin() {
 }
 function hideLogin() { loginModal.value = false; }
 function switchLoginMode(m) { loginMode.value = m; loginMsg.value = ""; }
-function logout() { clearEcsToken(); signedRate.value = "—"; qciLevel.value = "—"; setStatus("已退出", "info"); loginMode.value = "sms"; hasLimitService.value = false; showLogin(); }
+function logout() {
+  clearEcsToken();
+  localStorage.removeItem(PHONE_HISTORY_KEY);
+  localStorage.removeItem("UNICOM_ACCOUNT_FORMAT");
+  signedRate.value = "—";
+  qciLevel.value = "—";
+  setStatus("已退出", "info");
+  loginMode.value = "sms";
+  hasLimitService.value = false;
+}
 function applyTokenLogin() { if (loginToken.value.length > 20) { setEcsToken(loginToken.value); hideLogin(); fetchData(); } }
 function startTimer() { stopTimer(); timer = setInterval(() => { if (!paused.value) fetchData(); }, INTERVAL_MS); }
 function stopTimer() { clearInterval(timer); }
