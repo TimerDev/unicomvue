@@ -362,19 +362,7 @@ function buildCardsFromOcs(json) {
   }
 
   if (smsRes) {
-    // ✅ 修复短信数据，与语音逻辑保持一致
-    const used = toNum(smsRes?.userResource) ?? 0;
-    const remain = Math.max(0, toNum(smsRes?.remainResource) ?? 0);
-    
-    // 尝试多种方式获取总量：从 details 中获取或计算
-    let total = smsRes?.details?.[0]?.total ? toNum(smsRes.details[0].total) : null;
-    if (total === null || total === undefined) {
-      total = toNum(smsRes?.total);
-    }
-    if (total === null || total === undefined) {
-      total = used + remain;
-    }
-    
+    const { used, remain, total } = getAgg(smsRes);
     const percent = total > 0 ? clamp((used / total) * 100, 0, 100) : null;
     cards.push({ kind: "sms", title: "短信", subtitle: "（已用）", mainValue: `${Math.round(used)}条`, smallTotal: `总：${Math.round(total)}`, unlimited: false, percent, canUseText: `剩：${Math.round(remain)}` });
   }
