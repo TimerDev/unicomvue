@@ -210,19 +210,19 @@
 <script setup>
 import { computed, onMounted, onBeforeUnmount, ref, inject, nextTick } from "vue";
 import CopyModal from "@/components/CopyModal.vue";
+import { config, validateConfig } from "@/config";
 
 // ========= 配置 =========
-const MAIN_API = "https://networkapi.2t.hk";
-const STORAGE_KEY = "ecs_token";
-const PHONE_HISTORY_KEY = "last_used_phone"; // ✅ 新增本地记忆手机号
-const THEME_KEY = "theme";
-const LOGIN_API = MAIN_API + "/gettoken";
-const OCS_API = MAIN_API + "/ocs_proxy";
-const BASIC_API = MAIN_API + "/basicdata_proxy";
-const QCI_API = MAIN_API + "/qci_proxy";
-const INTERVAL_MS = 30_000;
-const CAPTCHA_APPID = "195809716";
-const ECS_ACC = "sGPt3BqyB6Z8STGQtqwLkkapYkz97jot5FVcLTq2IuxlXuBzS1vqZlKEe9Ac4QHJBkBAZYrKQKZyUhWatBMozAVYOL1Wd7sO/hXwCTggEcCFgpgaBytbG99HN3xavOGbeDtTZGV7eiBYSsQNhJ3wRvnvN2PKXFzBLhPa8i0j8Gs=";
+const LOGIN_API = config.loginApi;
+const OCS_API = config.ocsApi;
+const BASIC_API = config.basicApi;
+const QCI_API = config.qciApi;
+const INTERVAL_MS = config.refreshIntervalMs;
+const STORAGE_KEY = config.storageKeys.ecsToken;
+const ECS_ACC_KEY = config.storageKeys.ecsAcc;
+const CAPTCHA_APPID_KEY = config.storageKeys.captchaAppId;
+const PHONE_HISTORY_KEY = config.storageKeys.phoneHistory;
+const THEME_KEY = config.storageKeys.theme;
 
 // ========= UI state =========
 const loginMode = ref("sms");
@@ -302,10 +302,53 @@ function formatQciNum(v) { const n = toNum(v); return n === null ? "—" : `${Ma
 function formatFlowFromMB(mb) { const n = toNum(mb); if (n === null) return "—"; return n >= 1024 ? (n / 1024).toFixed(2) + "GB" : n.toFixed(2) + "MB"; }
 function formatMinutes(v) { const n = toNum(v); return n === null ? "—" : String(Math.round(n)) + "分钟"; }
 
-// Token & Auth Logic
-function getEcsToken() { return localStorage.getItem(STORAGE_KEY) || ""; }
-function setEcsToken(token) { localStorage.setItem(STORAGE_KEY, token); }
-function clearEcsToken() { localStorage.removeItem(STORAGE_KEY); }
+// ========= Token & Auth Logic =========
+// ⚠️ 注意：ECS Token 存储在 localStorage 中用于免重复登录
+// 建议：
+// 1. 在浏览器关闭时清除 Token（可配置）
+// 2. Token 应有过期机制（后端控制）
+// 3. 用户应在公共电脑上登出
+function getEcsToken() {
+  const token = localStorage.getItem(STORAGE_KEY) || "";
+  // 仅在开发环境输出 token 长度（生产环境禁用）
+  if (token && typeof import.meta.env.MODE !== 'undefined' && import.meta.env.MODE === 'development') {
+    console.debug(`[Auth] Token cached`);
+  }
+  return token; 
+}
+
+function setEcsToken(token) { 
+  // 验证 token 格式（至少 10 个字符）
+  if (!token || typeof token !== 'string' || token.length < 10) {
+    console.error('[Auth] Invalid token format - rejected');
+    return false;
+  }
+  localStorage.setItem(STORAGE_KEY, token); 
+  if (import.meta.env.MODE === 'development') {
+    console.debug('[Auth] Token stored');
+  }
+  return true;
+}
+
+function clearEcsToken() { 
+  localStorage.removeItem(STORAGE_KEY);
+  if (import.meta.env.MODE === 'development') {
+    console.debug('[Auth] Token cleared');
+  }
+// 从缓存读取 ECS_ACC（由登录时返回，登出时清理）
+function getEcsAcc() {
+  return localStorage.getItem(ECS_ACC_KEY) || "";
+}
+
+function setEcsAcc(acc) {
+  if (acc) {
+    localStorage.setItem(ECS_ACC_KEY, acc);
+  }
+}
+
+function clearEcsAcc() {
+  localStorage.removeItem(ECS_ACC_KEY);
+}
 
 function handleCommonErrors(json, httpStatus) {
   if (json?.code === 'BLACKLIST' || (json?.raw === '999997')) {
@@ -512,7 +555,7 @@ async function fetchData() {
   setStatus("请求中…", "info");
 
   try {
-    const r = await fetch(OCS_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ecs_token, ecs_acc: ECS_ACC }) });
+    const r = await fetch(OCS_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ecs_token, ecs_acc: getEcsAcc() }) });
     const t = await r.text();
 
     if (looksLikeHtml(t)) throw new Error("API返回HTML");
@@ -543,7 +586,7 @@ async function fetchBasicDataAndRenderRate() {
   const t = getEcsToken();
   if (!t) return;
   try {
-    const r = await fetch(BASIC_API, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify({ ecs_token: t, ecs_acc: ECS_ACC }) });
+    const r = await fetch(BASIC_API, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify({ ecs_token: t, ecs_acc: getEcsAcc() }) });
     const j = await r.json();
     if (handleCommonErrors(j, r.status)) return;
     if (j.code === "0000") {
@@ -559,7 +602,7 @@ async function fetchQciAndRender() {
   const t = getEcsToken();
   if (!t) return;
   try {
-    const r = await fetch(QCI_API, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify({ ecs_token: t, ecs_acc: ECS_ACC }) });
+    const r = await fetch(QCI_API, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify({ ecs_token: t, ecs_acc: getEcsAcc() }) });
     const j = await r.json();
     if (handleCommonErrors(j, r.status)) return;
     if (j.code === "0000") {
@@ -654,7 +697,15 @@ async function startCaptcha(mobileHex) {
     return;
   }
 
-  const captcha = new window.TencentCaptcha(CAPTCHA_APPID, async function(res) {
+  // 从缓存读取 CAPTCHA_APPID（由登录时返回）
+  const appId = localStorage.getItem(CAPTCHA_APPID_KEY);
+  if (!appId) {
+    loginMsg.value = '验证码配置未加载，请重新登录';
+    loginMsgKind.value = 'error';
+    return;
+  }
+
+  const captcha = new window.TencentCaptcha(appId, async function(res) {
     if (res.ret === 0) {
       try {
         loginMsg.value = "正在进行安全验证...";
@@ -743,6 +794,14 @@ async function doLogin() {
         currentAppId.value = extractedAppId;
       }
 
+      // 存储后端返回的 ecs_acc 和 captcha_appid（如果有的话）
+      if (d.ecs_acc) {
+        setEcsAcc(d.ecs_acc);
+      }
+      if (d.captcha_appid) {
+        localStorage.setItem(CAPTCHA_APPID_KEY, d.captcha_appid);
+      }
+
       // 保存到本地，格式参考 UNICOM_ACCOUNTS
       if (tokenOnline.value) {
         const accountInfo = `${loginPhone.value}#${tokenOnline.value}#${extractedAppId || currentAppId.value || generateAppId()}`;
@@ -770,6 +829,8 @@ function hideLogin() { loginModal.value = false; }
 function switchLoginMode(m) { loginMode.value = m; loginMsg.value = ""; }
 function logout() {
   clearEcsToken();
+  clearEcsAcc();
+  localStorage.removeItem(CAPTCHA_APPID_KEY);
   localStorage.removeItem(PHONE_HISTORY_KEY);
   localStorage.removeItem("UNICOM_ACCOUNT_FORMAT");
   signedRate.value = "—";

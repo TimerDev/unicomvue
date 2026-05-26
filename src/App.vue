@@ -19,6 +19,6 @@ provide("closePrivacy", closePrivacy);
 
 <template>
   <RouterView />
-  <PrivacyModal v-model:open="privacyOpen" contact-email="aliya@nbcnm.cn" />
-  <FooterView contact-email="aliya@nbcnm.cn" />
+  <PrivacyModal v-model:open="privacyOpen" />
+  <FooterView />
 </template>

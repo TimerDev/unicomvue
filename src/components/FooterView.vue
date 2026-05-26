@@ -80,10 +80,6 @@
 import { computed } from "vue";
 import { APP_BRANCH, APP_COMMIT, APP_BUILD_TIME } from "@/env";
 
-defineProps({
-  contactEmail: { type: String, default: "aliya@nbcnm.cn" },
-});
-
 const year = new Date().getFullYear();
 
 const branchLabel = computed(() => (APP_BRANCH ? APP_BRANCH : "local"));

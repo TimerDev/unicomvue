@@ -113,7 +113,6 @@ import ApiItem from "@/components/ApiItem.vue";
 
 const props = defineProps({
     open: { type: Boolean, default: false },
-    contactEmail: { type: String, default: "aliya@nbcnm.cn" },
 });
 
 const emit = defineEmits(["update:open"]);
