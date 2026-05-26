@@ -9,14 +9,13 @@
 或者使用`Docker`部署
 
 ```bash
-docker run -d --rm -p 8086:8086 timerdev/unicomvue:latest
+docker run -d --rm -p 8086:8086 ghcr.io/timerdev/unicomvue:latest
 ```
 
 或者使用腾讯云提供的一键部署
 
 [![Use EdgeOne Pages to deploy](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2FTimerDev%2Funicomvue)
 
-[Demo](https://net.2t.hk/)
 
 特性：
 
