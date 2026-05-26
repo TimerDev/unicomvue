@@ -106,10 +106,43 @@ async function copyToClipboard(text, label) {
   }
 
   try {
-    await navigator.clipboard.writeText(text);
-    copyStatus.value = { success: true, message: `${label} 已复制到剪贴板` };
+    // 首先尝试使用 Clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      copyStatus.value = { success: true, message: `${label} 已复制到剪贴板` };
+      setTimeout(() => { copyStatus.value = null; }, 2000);
+    } else {
+      // 备用方案：使用旧的 execCommand 方法
+      fallbackCopyToClipboard(text, label);
+    }
+  } catch (e) {
+    console.error(`Copy failed for ${label}:`, e);
+    // 如果 Clipboard API 失败，使用备用方案
+    fallbackCopyToClipboard(text, label);
+  }
+}
+
+function fallbackCopyToClipboard(text, label) {
+  try {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    const success = document.execCommand('copy');
+    document.body.removeChild(textArea);
+
+    if (success) {
+      copyStatus.value = { success: true, message: `${label} 已复制到剪贴板` };
+    } else {
+      copyStatus.value = { success: false, message: `${label} 复制失败` };
+    }
     setTimeout(() => { copyStatus.value = null; }, 2000);
   } catch (e) {
+    console.error(`Fallback copy failed for ${label}:`, e);
     copyStatus.value = { success: false, message: `${label} 复制失败` };
     setTimeout(() => { copyStatus.value = null; }, 2000);
   }
