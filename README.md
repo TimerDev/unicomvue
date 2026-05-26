@@ -9,7 +9,7 @@
 或者使用`Docker`部署
 
 ```bash
-docker run -d --rm -p 80:80 ghcr.io/timerdev/unicomvue:latest
+docker run -d --rm -p 8086:80 ghcr.io/timerdev/unicomvue:latest
 ```
 
 或者使用腾讯云提供的一键部署
