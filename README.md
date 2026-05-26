@@ -4,17 +4,17 @@
 
 以及支持查询隐藏包。
 
-如果你不了解如何打包vite项目，请[点此下载](https://aliya-chen.github.io/unicomvue/dist.zip)解压文件部署到服务器根目录即可
+如果你不了解如何打包vite项目，请[点此下载](https://timerdev.github.io/unicomvue/dist.zip)解压文件部署到服务器根目录即可
 
 或者使用`Docker`部署
 
 ```bash
-docker run -d --rm -p 8080:80 bingoma/network-panel:latest
+docker run -d --rm -p 8086:8086 timerdev/unicomvue:latest
 ```
 
 或者使用腾讯云提供的一键部署
 
-[![Use EdgeOne Pages to deploy](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2FAliYa-chen%2Funicomvue)
+[![Use EdgeOne Pages to deploy](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https%3A%2F%2Fgithub.com%2FTimerDev%2Funicomvue)
 
 [Demo](https://net.2t.hk/)
 
