@@ -314,27 +314,29 @@ function getEcsToken() {
   if (token && typeof import.meta.env.MODE !== 'undefined' && import.meta.env.MODE === 'development') {
     console.debug(`[Auth] Token cached`);
   }
-  return token; 
+  return token;
 }
 
-function setEcsToken(token) { 
+function setEcsToken(token) {
   // 验证 token 格式（至少 10 个字符）
   if (!token || typeof token !== 'string' || token.length < 10) {
     console.error('[Auth] Invalid token format - rejected');
     return false;
   }
-  localStorage.setItem(STORAGE_KEY, token); 
+  localStorage.setItem(STORAGE_KEY, token);
   if (import.meta.env.MODE === 'development') {
     console.debug('[Auth] Token stored');
   }
   return true;
 }
 
-function clearEcsToken() { 
+function clearEcsToken() {
   localStorage.removeItem(STORAGE_KEY);
   if (import.meta.env.MODE === 'development') {
     console.debug('[Auth] Token cleared');
   }
+}
+
 // 从缓存读取 ECS_ACC（由登录时返回，登出时清理）
 function getEcsAcc() {
   return localStorage.getItem(ECS_ACC_KEY) || "";
